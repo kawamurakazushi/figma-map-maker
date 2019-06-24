@@ -1,0 +1,21 @@
+{
+  "name": "figma-map-generator",
+  "version": "o.1.0",
+  "main": "index.js",
+  "repository": "git@github.com:kawamurakazushi/figma-map-generator.git",
+  "author": "Kazushi Kawamura <wakaka2277@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "html-webpack-inline-source-plugin": "^0.0.10",
+    "html-webpack-plugin": "^3.2.0",
+    "typescript": "^3.5.2",
+    "webpack-cli": "^3.3.4"
+  },
+  "scripts": {
+    "build": "tsc -w"
+  },
+  "dependencies": {
+    "ts-loader": "^6.0.3",
+    "webpack": "^4.35.0"
+  }
+}
