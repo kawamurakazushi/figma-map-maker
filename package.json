@@ -12,9 +12,11 @@
     "webpack-cli": "^3.3.4"
   },
   "scripts": {
-    "build": "tsc -w"
+    "build": "webpack",
+    "watch": "webpack -w"
   },
   "dependencies": {
+    "preact": "10.0.0-beta.3",
     "ts-loader": "^6.0.3",
     "webpack": "^4.35.0"
   }

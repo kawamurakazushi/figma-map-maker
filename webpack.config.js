@@ -5,7 +5,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    ui: "./src/ui.ts",
+    ui: "./src/ui.tsx",
     code: "./src/code.ts"
   },
   output: {
