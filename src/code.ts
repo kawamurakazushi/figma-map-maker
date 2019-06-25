@@ -1,20 +1,31 @@
-figma.showUI(__html__);
+const key = "options";
+
+figma.showUI(__html__, { width: 600, height: 550 });
+
+const selection = figma.currentPage.selection;
+if (selection.length === 1) {
+  const node = selection[0];
+  // send options to UI.
+  figma.ui.postMessage(node.getPluginData(key));
+}
+
 figma.ui.onmessage = msg => {
   if (msg.type === "image") {
-    const selection = figma.currentPage.selection;
-    // TODO: more types
     if (selection.length === 1) {
       const node = selection[0];
-
-      console.log(node.type);
-
-      // TODO: id the type is PageNode
+      // TODO: Error Handling
       if (
         node.type === "RECTANGLE" ||
         node.type === "POLYGON" ||
         node.type === "ELLIPSE"
       ) {
         const newImage = figma.createImage(msg.image);
+
+        // Save options
+        if (msg.options) {
+          node.setPluginData(key, JSON.stringify(msg.options));
+        }
+
         node.fills = [
           {
             type: "IMAGE",
@@ -23,21 +34,8 @@ figma.ui.onmessage = msg => {
           }
         ];
       }
-      // const rect = figma.createRectangle();
-      // rect.resize(600, 300);
     }
   }
-  if (msg.type === "create-rectangles") {
-    const nodes = [];
-    for (let i = 0; i < msg.count; i++) {
-      const rect = figma.createRectangle();
-      rect.x = i * 150;
-      rect.fills = [{ type: "SOLID", color: { r: 1, g: 0.5, b: 0 } }];
-      figma.currentPage.appendChild(rect);
-      nodes.push(rect);
-    }
-    figma.currentPage.selection = nodes;
-    figma.viewport.scrollAndZoomIntoView(nodes);
-  }
+
   figma.closePlugin();
 };
