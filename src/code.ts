@@ -1,6 +1,6 @@
 const key = "options";
 
-figma.showUI(__html__, { width: 600, height: 550 });
+figma.showUI(__html__, { width: 600, height: 600 });
 
 const selection = figma.currentPage.selection;
 if (selection.length === 1) {
@@ -17,7 +17,8 @@ figma.ui.onmessage = msg => {
       if (
         node.type === "RECTANGLE" ||
         node.type === "POLYGON" ||
-        node.type === "ELLIPSE"
+        node.type === "ELLIPSE" ||
+        node.type === "VECTOR"
       ) {
         const newImage = figma.createImage(msg.image);
 
