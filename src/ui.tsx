@@ -1,11 +1,13 @@
 import { h, render } from "preact";
 import { useEffect, useReducer } from "preact/hooks";
+import { convert } from "./styleConverter";
 
 interface MapOptions {
   address: string;
   type: "roadmap" | "satellite" | "hybrid" | "terrain";
   marker: boolean;
   zoom: number;
+  json?: string;
 }
 
 interface Store {
@@ -38,6 +40,11 @@ interface InputMarkerAction {
   value: boolean;
 }
 
+interface InputJsonAction {
+  type: "INPUT_JSON";
+  value: string;
+}
+
 interface InputOptionsAction {
   type: "INPUT_OPTIONS";
   value: MapOptions;
@@ -49,13 +56,15 @@ type Action =
   | InputZoomAction
   | InputMarkerAction
   | InputMapTypeAction
+  | InputJsonAction
   | InputOptionsAction;
 
-const generateUrl = ({ address, type, marker, zoom }: MapOptions) => {
+const generateUrl = ({ address, type, marker, zoom, json }: MapOptions) => {
   const encodedAddress = encodeURIComponent(address);
   const url =
     `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=${zoom}&size=600x300&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
-    (marker ? `&markers=color:red|${encodedAddress}` : "");
+    (marker ? `&markers=color:red|${encodedAddress}` : "") +
+    (json ? convert(json) : "");
 
   return url;
 };
@@ -89,22 +98,32 @@ const App = () => {
       switch (action.type) {
         case "CHANGE_TAB":
           return { ...state, tab: action.tab };
+
         case "INPUT_ADDRESS":
           return {
             ...state,
             options: { ...state.options, address: action.value }
           };
+
         case "INPUT_MAP_TYPE":
           return {
             ...state,
             options: { ...state.options, type: action.value }
           };
+
         case "INPUT_MARKER":
           console.log(action.value);
           return {
             ...state,
             options: { ...state.options, marker: action.value }
           };
+
+        case "INPUT_JSON":
+          return {
+            ...state,
+            options: { ...state.options, json: action.value }
+          };
+
         case "INPUT_ZOOM":
           return {
             ...state,
@@ -239,7 +258,15 @@ const App = () => {
       )}
       {store.tab === 1 && (
         <div>
-          <textarea style={{ width: "100%" }} rows={5} />
+          <textarea
+            onInput={(e: any) =>
+              dispatch({ type: "INPUT_JSON", value: e.target.value })
+            }
+            style={{ width: "100%" }}
+            rows={5}
+          >
+            {store.options.json}
+          </textarea>
         </div>
       )}
       <div style={{ flex: 1 }}>
