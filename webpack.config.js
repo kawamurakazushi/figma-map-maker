@@ -5,7 +5,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    ui: "./src/ui.tsx",
+    ui: "./src/ui/App.tsx",
     code: "./src/code.ts"
   },
   output: {
@@ -29,9 +29,9 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/ui.html",
+      template: "./src/ui/index.html",
       filename: "ui.html",
-      inlineSource: ".(js)$",
+      inlineSource: ".(js|css)$",
       chunks: ["ui"]
     }),
     new HtmlWebpackInlineSourcePlugin()

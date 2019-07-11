@@ -197,6 +197,7 @@ const App = () => {
           <div>
             <p style={smallText}>Address:</p>
             <input
+              className="input"
               style={{ width: 400 }}
               value={store.options.address}
               onInput={(e: any) =>

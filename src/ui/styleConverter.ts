@@ -39,7 +39,7 @@ const convert = (jsonString: string) => {
 
     for (let s = 0; s < stylers.length; s++) {
       const styleItem = stylers[s];
-      const key = Object.keys(styleItem)[0]; // there is only one per element
+      const key = Object.keys(styleItem)[0];
 
       style = style ? style + separator : "";
       style +=
