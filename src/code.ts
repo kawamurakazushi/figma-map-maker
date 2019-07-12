@@ -1,6 +1,6 @@
 const key = "options";
 
-figma.showUI(__html__, { width: 600, height: 600 });
+figma.showUI(__html__, { width: 600, height: 616 });
 
 const selection = figma.currentPage.selection;
 if (selection.length === 1) {

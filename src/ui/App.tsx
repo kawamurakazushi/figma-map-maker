@@ -2,6 +2,9 @@ import { h, render } from "preact";
 import { useEffect, useReducer } from "preact/hooks";
 import { convert } from "./styleConverter";
 
+import "./figma-ui.min.css";
+// import "./figma-ui.min.js";
+
 interface MapOptions {
   address: string;
   type: "roadmap" | "satellite" | "hybrid" | "terrain";
@@ -81,17 +84,6 @@ const send = async (options: MapOptions) => {
   );
 };
 
-const smallText = {
-  fontSize: 12
-};
-
-const tab = (active: boolean) => ({
-  ...smallText,
-  cursor: "pointer",
-  fontWeight: active ? "bold" : undefined,
-  color: active ? undefined : "lightgrey"
-});
-
 const App = () => {
   const [store, dispatch] = useReducer<Store, Action>(
     (state, action) => {
@@ -112,7 +104,6 @@ const App = () => {
           };
 
         case "INPUT_MARKER":
-          console.log(action.value);
           return {
             ...state,
             options: { ...state.options, marker: action.value }
@@ -164,7 +155,7 @@ const App = () => {
   return (
     <div
       style={{
-        padding: "0 8px",
+        padding: "8px",
         height: "100%",
         display: "flex",
         flexDirection: "column"
@@ -172,33 +163,34 @@ const App = () => {
     >
       <div style={{ display: "flex", padding: "2px 0" }}>
         <span
+          className={store.tab === 0 ? "type--12-pos-bold" : "type--12-pos"}
           onClick={() => dispatch({ type: "CHANGE_TAB", tab: 0 })}
-          style={{ ...tab(store.tab === 0), ...{ marginRight: 12 } }}
+          style={{
+            marginRight: 8,
+            cursor: "pointer",
+            ...(store.tab === 0 ? {} : { color: "rgba(0, 0, 0, 0.3)" })
+          }}
         >
           Basic
         </span>
         <span
+          className={store.tab === 1 ? "type--12-pos-bold" : "type--12-pos"}
           onClick={() => dispatch({ type: "CHANGE_TAB", tab: 1 })}
-          style={{ ...tab(store.tab === 1) }}
+          style={{
+            cursor: "pointer",
+            ...(store.tab === 1 ? {} : { color: "rgba(0, 0, 0, 0.3)" })
+          }}
         >
           Advance
         </span>
       </div>
-      <div
-        style={{
-          height: "1px",
-          width: "100%",
-          backgroundColor: "lightgrey",
-          margin: "8px 0"
-        }}
-      />
       {store.tab === 0 && (
         <div>
-          <div>
-            <p style={smallText}>Address:</p>
+          <div style={{}}>
+            <p className="type--12-pos">Address:</p>
             <input
               className="input"
-              style={{ width: 400 }}
+              placeholder="Input Address here:"
               value={store.options.address}
               onInput={(e: any) =>
                 dispatch({ type: "INPUT_ADDRESS", value: e.target.value })
@@ -206,7 +198,7 @@ const App = () => {
             />
           </div>
           <div>
-            <p style={smallText}>Map Type:</p>
+            <p className="type--12-pos">Map Type:</p>
             <select
               onChange={(e: any) =>
                 dispatch({ type: "INPUT_MAP_TYPE", value: e.target.value })
@@ -221,7 +213,7 @@ const App = () => {
             </select>
           </div>
           <div>
-            <p style={smallText}>Zoom Level:</p>
+            <p className="type--12-pos">Zoom Level:</p>
             <button
               disabled={store.options.zoom <= 0}
               onClick={() =>
@@ -230,7 +222,7 @@ const App = () => {
             >
               -
             </button>
-            <span style={{ ...smallText, margin: "0 8px" }}>
+            <span className="type--12-pos" style={{ margin: "0 8px" }}>
               {store.options.zoom}
             </span>
             <button
@@ -243,7 +235,7 @@ const App = () => {
             </button>
           </div>
           <div style={{ margin: "16px 0" }}>
-            <label style={smallText}>
+            <label className="type--12-pos">
               <input
                 style={{ marginRight: 8 }}
                 onChange={(e: any) =>
@@ -259,7 +251,9 @@ const App = () => {
       )}
       {store.tab === 1 && (
         <div>
+          <p className="type--12-pos">Paste your JSON</p>
           <textarea
+            className="textarea"
             onInput={(e: any) =>
               dispatch({ type: "INPUT_JSON", value: e.target.value })
             }
@@ -268,16 +262,28 @@ const App = () => {
           >
             {store.options.json}
           </textarea>
+          <p className="type--12-pos">
+            Find at more here:{" "}
+            <a target="__blank" href="https://snazzymaps.com/explore">
+              Snazzy Map
+            </a>{" "}
+            <a target="__blank" href="https://mapstyle.withgoogle.com/">
+              Google Official Map Style
+            </a>
+          </p>
         </div>
       )}
-      <div style={{ flex: 1 }}>
+      <div
+        style={{ flex: 1, display: "flex", flexDirection: "column-reverse" }}
+      >
+        <img style={{ width: "100%" }} src={generateUrl(store.options)} />
         <button
-          style={{ marginBottom: 16 }}
+          className="button button--primary"
+          style={{ marginBottom: 16, width: "80px" }}
           onClick={() => send(store.options)}
         >
           Make it
         </button>
-        <img style={{ width: "100%" }} src={generateUrl(store.options)} />
       </div>
     </div>
   );
