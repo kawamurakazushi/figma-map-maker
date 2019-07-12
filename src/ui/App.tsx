@@ -3,7 +3,6 @@ import { useEffect, useReducer } from "preact/hooks";
 import { convert } from "./styleConverter";
 
 import "./figma-ui.min.css";
-// import "./figma-ui.min.js";
 
 interface MapOptions {
   address: string;
@@ -64,10 +63,13 @@ type Action =
 
 const generateUrl = ({ address, type, marker, zoom, json }: MapOptions) => {
   const encodedAddress = encodeURIComponent(address);
+
+  const style = convert(json);
+
   const url =
     `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=${zoom}&size=600x300&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
     (marker ? `&markers=color:red|${encodedAddress}` : "") +
-    (json ? convert(json) : "");
+    (style ? style : "");
 
   return url;
 };
@@ -257,11 +259,16 @@ const App = () => {
             onInput={(e: any) =>
               dispatch({ type: "INPUT_JSON", value: e.target.value })
             }
-            style={{ width: "100%" }}
+            style={{ width: "100%", margin: 0 }}
             rows={5}
           >
             {store.options.json}
           </textarea>
+          {store.options.json && convert(store.options.json) === undefined && (
+            <p className="type--12-pos" style={{ color: "#f24822" }}>
+              Invalid JSON. Please check your format.
+            </p>
+          )}
           <p className="type--12-pos">
             Find at more here:{" "}
             <a target="__blank" href="https://snazzymaps.com/explore">

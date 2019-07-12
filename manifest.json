@@ -1,7 +1,7 @@
 {
   "name": "Map Maker",
   "id": "ioogLqNDqqMJmzvLhzaxxO",
-  "version": "0.5.0",
-  "html": "dist/ui.html",
-  "script": "dist/code.js"
+  "api": "0.6.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
 }
