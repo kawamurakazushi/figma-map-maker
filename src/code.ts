@@ -20,17 +20,17 @@ figma.ui.onmessage = msg => {
         node.type === "ELLIPSE" ||
         node.type === "VECTOR"
       ) {
-        const newImage = figma.createImage(msg.image);
-
         // Save options
         if (msg.options) {
           node.setPluginData(key, JSON.stringify(msg.options));
         }
 
+        const image = figma.createImage(msg.image);
+
         node.fills = [
           {
             type: "IMAGE",
-            image: newImage,
+            imageHash: image.hash,
             scaleMode: "FILL"
           }
         ];
