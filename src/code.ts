@@ -2,25 +2,30 @@ const key = "options";
 
 figma.showUI(__html__, { width: 600, height: 616 });
 
-const selection = figma.currentPage.selection;
-if (selection.length === 1) {
-  const node = selection[0];
-  // send options to UI.
-  figma.ui.postMessage(node.getPluginData(key));
+// Get options of the initial selected node.
+const initialSelection = figma.currentPage.selection;
+if (initialSelection.length >= 1) {
+  figma.ui.postMessage(initialSelection[0].getPluginData(key));
 }
 
 figma.ui.onmessage = msg => {
   if (msg.type === "image") {
-    if (selection.length === 1) {
-      const node = selection[0];
-      // TODO: Error Handling
+    const selection = figma.currentPage.selection;
+
+    // Send error if nothing is selected
+    if (selection.length === 0) {
+      return;
+    }
+
+    // Fill all selected node
+    selection.forEach(node => {
       if (
         node.type === "RECTANGLE" ||
         node.type === "POLYGON" ||
         node.type === "ELLIPSE" ||
         node.type === "VECTOR"
       ) {
-        // Save options
+        // Save options to node
         if (msg.options) {
           node.setPluginData(key, JSON.stringify(msg.options));
         }
@@ -35,7 +40,7 @@ figma.ui.onmessage = msg => {
           }
         ];
       }
-    }
+    });
   }
 
   figma.closePlugin();
