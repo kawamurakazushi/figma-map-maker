@@ -5,7 +5,10 @@ figma.showUI(__html__, { width: 600, height: 616 });
 // Get options of the initial selected node.
 const initialSelection = figma.currentPage.selection;
 if (initialSelection.length >= 1) {
-  figma.ui.postMessage(initialSelection[0].getPluginData(key));
+  figma.ui.postMessage({
+    type: "initial",
+    data: initialSelection[0].getPluginData(key)
+  });
 }
 
 figma.ui.onmessage = msg => {
@@ -14,6 +17,7 @@ figma.ui.onmessage = msg => {
 
     // Send error if nothing is selected
     if (selection.length === 0) {
+      figma.ui.postMessage({ type: "error" });
       return;
     }
 

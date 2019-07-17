@@ -15,6 +15,7 @@ interface MapOptions {
 interface Store {
   tab: number;
   options: MapOptions;
+  error: boolean;
 }
 
 interface ChangeTabAction {
@@ -52,6 +53,10 @@ interface InputOptionsAction {
   value: MapOptions;
 }
 
+interface ErrorAction {
+  type: "ERROR";
+}
+
 type Action =
   | ChangeTabAction
   | InputAddressAction
@@ -59,7 +64,8 @@ type Action =
   | InputMarkerAction
   | InputMapTypeAction
   | InputJsonAction
-  | InputOptionsAction;
+  | InputOptionsAction
+  | ErrorAction;
 
 const generateUrl = ({ address, type, marker, zoom, json }: MapOptions) => {
   const encodedAddress = encodeURIComponent(address);
@@ -128,6 +134,8 @@ const App = () => {
             ...state,
             options: action.value
           };
+        case "ERROR":
+          return { ...state, error: true };
 
         default:
           return state;
@@ -140,16 +148,22 @@ const App = () => {
         type: "roadmap",
         marker: false,
         zoom: 15
-      }
+      },
+      error: false
     }
   );
 
   useEffect(() => {
     onmessage = event => {
-      const data = event.data.pluginMessage;
-      if (data) {
-        const nodeOption: MapOptions = JSON.parse(data);
+      const msg = event.data.pluginMessage;
+
+      if (msg.type === "initial") {
+        const nodeOption: MapOptions = JSON.parse(msg.data);
         dispatch({ type: "INPUT_OPTIONS", value: nodeOption });
+      }
+
+      if (msg.type === "error") {
+        dispatch({ type: "ERROR" });
       }
     };
   }, []);
@@ -284,13 +298,25 @@ const App = () => {
         style={{ flex: 1, display: "flex", flexDirection: "column-reverse" }}
       >
         <img style={{ width: "100%" }} src={generateUrl(store.options)} />
-        <button
-          className="button button--primary"
-          style={{ marginBottom: 16, width: "80px" }}
-          onClick={() => send(store.options)}
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 16 }}
         >
-          Make it
-        </button>
+          <button
+            className="button button--primary"
+            style={{ width: "80px" }}
+            onClick={() => send(store.options)}
+          >
+            Make it
+          </button>
+          {store.error && (
+            <p
+              className="type--12-pos"
+              style={{ color: "#f24822", marginLeft: 8 }}
+            >
+              Please select at least one layer.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
