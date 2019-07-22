@@ -1,6 +1,6 @@
 const key = "options";
 
-figma.showUI(__html__, { width: 600, height: 616 });
+figma.showUI(__html__, { width: 800, height: 565 });
 
 // Get options of the initial selected node.
 const initialSelection = figma.currentPage.selection;

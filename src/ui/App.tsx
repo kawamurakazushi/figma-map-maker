@@ -1,87 +1,25 @@
-import { h, render } from "preact";
+import { h, render, ComponentChildren } from "preact";
 import { useEffect, useReducer } from "preact/hooks";
-import { convert } from "./styleConverter";
+
+import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
+import { GoogleMapInputs } from "./components/GoogleMapInputs";
+import { Line } from "./components/Line";
 
 import "./figma-ui.min.css";
 
-interface MapOptions {
-  address: string;
-  type: "roadmap" | "satellite" | "hybrid" | "terrain";
-  marker: boolean;
-  zoom: number;
-  json?: string;
-}
+type Options = GoogleMapOptions;
 
 interface Store {
-  tab: number;
-  options: MapOptions;
   error: boolean;
-}
-
-interface ChangeTabAction {
-  type: "CHANGE_TAB";
-  tab: number;
-}
-
-interface InputZoomAction {
-  type: "INPUT_ZOOM";
-  value: number;
-}
-
-interface InputMapTypeAction {
-  type: "INPUT_MAP_TYPE";
-  value: "roadmap" | "satellite" | "hybrid" | "terrain";
-}
-
-interface InputAddressAction {
-  type: "INPUT_ADDRESS";
-  value: string;
-}
-
-interface InputMarkerAction {
-  type: "INPUT_MARKER";
-  value: boolean;
-}
-
-interface InputJsonAction {
-  type: "INPUT_JSON";
-  value: string;
-}
-
-interface InputOptionsAction {
-  type: "INPUT_OPTIONS";
-  value: MapOptions;
 }
 
 interface ErrorAction {
   type: "ERROR";
 }
 
-type Action =
-  | ChangeTabAction
-  | InputAddressAction
-  | InputZoomAction
-  | InputMarkerAction
-  | InputMapTypeAction
-  | InputJsonAction
-  | InputOptionsAction
-  | ErrorAction;
+type Action = ErrorAction;
 
-const generateUrl = ({ address, type, marker, zoom, json }: MapOptions) => {
-  const encodedAddress = encodeURIComponent(address);
-
-  const style = convert(json);
-
-  const url =
-    `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=${zoom}&size=600x300&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
-    (marker ? `&markers=color:red|${encodedAddress}` : "") +
-    (style ? style : "");
-
-  return url;
-};
-
-const send = async (options: MapOptions) => {
-  const url = generateUrl(options);
+const send = async (url: string, options: Options) => {
   const response = await fetch(url);
   const buffer = await response.arrayBuffer();
   parent.postMessage(
@@ -92,48 +30,29 @@ const send = async (options: MapOptions) => {
   );
 };
 
+const Tab = ({
+  children,
+  active
+}: {
+  children: ComponentChildren;
+  active: boolean;
+}) => (
+  <div
+    style={{
+      marginRight: 16,
+      color: active ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0.3)",
+      cursor: "default"
+    }}
+    className="type--12-pos-medium"
+  >
+    {children}
+  </div>
+);
+
 const App = () => {
   const [store, dispatch] = useReducer<Store, Action>(
     (state, action) => {
       switch (action.type) {
-        case "CHANGE_TAB":
-          return { ...state, tab: action.tab };
-
-        case "INPUT_ADDRESS":
-          return {
-            ...state,
-            options: { ...state.options, address: action.value }
-          };
-
-        case "INPUT_MAP_TYPE":
-          return {
-            ...state,
-            options: { ...state.options, type: action.value }
-          };
-
-        case "INPUT_MARKER":
-          return {
-            ...state,
-            options: { ...state.options, marker: action.value }
-          };
-
-        case "INPUT_JSON":
-          return {
-            ...state,
-            options: { ...state.options, json: action.value }
-          };
-
-        case "INPUT_ZOOM":
-          return {
-            ...state,
-            options: { ...state.options, zoom: action.value }
-          };
-
-        case "INPUT_OPTIONS":
-          return {
-            ...state,
-            options: action.value
-          };
         case "ERROR":
           return { ...state, error: true };
 
@@ -142,24 +61,19 @@ const App = () => {
       }
     },
     {
-      tab: 0,
-      options: {
-        address: "",
-        type: "roadmap",
-        marker: false,
-        zoom: 15
-      },
       error: false
     }
   );
+
+  const [googleStore, googleDispatch] = useGoogleMap();
 
   useEffect(() => {
     onmessage = event => {
       const msg = event.data.pluginMessage;
 
       if (msg.type === "initial") {
-        const nodeOption: MapOptions = JSON.parse(msg.data);
-        dispatch({ type: "INPUT_OPTIONS", value: nodeOption });
+        const nodeOption: Options = JSON.parse(msg.data);
+        googleDispatch({ type: "INPUT_OPTIONS", value: nodeOption });
       }
 
       if (msg.type === "error") {
@@ -171,151 +85,49 @@ const App = () => {
   return (
     <div
       style={{
-        padding: "8px",
         height: "100%",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "row"
       }}
     >
-      <div style={{ display: "flex", padding: "2px 0" }}>
-        <span
-          className={store.tab === 0 ? "type--12-pos-bold" : "type--12-pos"}
-          onClick={() => dispatch({ type: "CHANGE_TAB", tab: 0 })}
-          style={{
-            marginRight: 8,
-            cursor: "pointer",
-            ...(store.tab === 0 ? {} : { color: "rgba(0, 0, 0, 0.3)" })
-          }}
-        >
-          Basic
-        </span>
-        <span
-          className={store.tab === 1 ? "type--12-pos-bold" : "type--12-pos"}
-          onClick={() => dispatch({ type: "CHANGE_TAB", tab: 1 })}
-          style={{
-            cursor: "pointer",
-            ...(store.tab === 1 ? {} : { color: "rgba(0, 0, 0, 0.3)" })
-          }}
-        >
-          Advance
-        </span>
+      <div style={{}}>
+        <div style={{ display: "flex", padding: "0 16px", marginTop: 16 }}>
+          <Tab active={true}>Google Maps</Tab>
+          <Tab active={false}>Mapbox</Tab>
+        </div>
+        <Line />
+        <GoogleMapInputs store={googleStore} dispatch={googleDispatch} />
       </div>
-      {store.tab === 0 && (
-        <div>
-          <div style={{}}>
-            <p className="type--12-pos">Address:</p>
-            <input
-              className="input"
-              placeholder="Input Address here:"
-              value={store.options.address}
-              onInput={(e: any) =>
-                dispatch({ type: "INPUT_ADDRESS", value: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <p className="type--12-pos">Map Type:</p>
-            <select
-              onChange={(e: any) =>
-                dispatch({ type: "INPUT_MAP_TYPE", value: e.target.value })
-              }
-              value={store.options.type}
-            >
-              {["roadmap", "satellite", "hybrid", "terrain"].map(t => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <p className="type--12-pos">Zoom Level:</p>
-            <button
-              disabled={store.options.zoom <= 0}
-              onClick={() =>
-                dispatch({ type: "INPUT_ZOOM", value: store.options.zoom - 1 })
-              }
-            >
-              -
-            </button>
-            <span className="type--12-pos" style={{ margin: "0 8px" }}>
-              {store.options.zoom}
-            </span>
-            <button
-              disabled={store.options.zoom >= 20}
-              onClick={() =>
-                dispatch({ type: "INPUT_ZOOM", value: store.options.zoom + 1 })
-              }
-            >
-              +
-            </button>
-          </div>
-          <div style={{ margin: "16px 0" }}>
-            <label className="type--12-pos">
-              <input
-                style={{ marginRight: 8 }}
-                onChange={(e: any) =>
-                  dispatch({ type: "INPUT_MARKER", value: e.target.checked })
-                }
-                checked={store.options.marker}
-                type="checkbox"
-              />
-              Show Marker
-            </label>
-          </div>
-        </div>
-      )}
-      {store.tab === 1 && (
-        <div>
-          <p className="type--12-pos">Paste your JSON</p>
-          <textarea
-            className="textarea"
-            onInput={(e: any) =>
-              dispatch({ type: "INPUT_JSON", value: e.target.value })
-            }
-            style={{ width: "100%", margin: 0 }}
-            rows={5}
-          >
-            {store.options.json}
-          </textarea>
-          {store.options.json && convert(store.options.json) === undefined && (
-            <p className="type--12-pos" style={{ color: "#f24822" }}>
-              Invalid JSON. Please check your format.
-            </p>
-          )}
-          <p className="type--12-pos">
-            Find at more here:{" "}
-            <a target="__blank" href="https://snazzymaps.com/explore">
-              Snazzy Map
-            </a>{" "}
-            <a target="__blank" href="https://mapstyle.withgoogle.com/">
-              Google Official Map Style
-            </a>
-          </p>
-        </div>
-      )}
       <div
-        style={{ flex: 1, display: "flex", flexDirection: "column-reverse" }}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "column"
+        }}
       >
-        <img style={{ width: "100%" }} src={generateUrl(store.options)} />
+        <img style={{ width: "100%" }} src={googleStore.url} />
+        {store.error && (
+          <p
+            className="type--12-pos"
+            style={{ color: "#f24822", marginLeft: 8 }}
+          >
+            Please select at least one layer.
+          </p>
+        )}
         <div
-          style={{ display: "flex", alignItems: "center", marginBottom: 16 }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
         >
           <button
             className="button button--primary"
-            style={{ width: "80px" }}
-            onClick={() => send(store.options)}
+            style={{ width: "100px" }}
+            onClick={() => send(googleStore.url, googleStore.options)}
           >
-            Make it
+            Make Map
           </button>
-          {store.error && (
-            <p
-              className="type--12-pos"
-              style={{ color: "#f24822", marginLeft: 8 }}
-            >
-              Please select at least one layer.
-            </p>
-          )}
         </div>
       </div>
     </div>
