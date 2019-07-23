@@ -96,6 +96,10 @@ const App = () => {
       const msg = event.data.pluginMessage;
 
       if (msg.type === "initial") {
+        if (!msg.data) {
+          return;
+        }
+
         const options = JSON.parse(msg.data);
 
         if (options.mapbox) {
@@ -153,10 +157,18 @@ const App = () => {
           flexDirection: "column"
         }}
       >
-        <img
-          style={{ width: "100%" }}
-          src={store.tab === "googleMap" ? googleStore.url : mapboxStore.url}
-        />
+        <div>
+          <img
+            style={{ width: "100%", height: 500 }}
+            src={
+              store.tab === "googleMap"
+                ? googleStore.url
+                : store.tab === "mapbox"
+                ? mapboxStore.url
+                : null
+            }
+          />
+        </div>
         {store.error && (
           <p
             className="type--12-pos"

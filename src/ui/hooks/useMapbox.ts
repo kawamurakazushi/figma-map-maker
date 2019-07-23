@@ -60,18 +60,29 @@ const generateUrl = async ({ address, zoom, type }: MapboxOptions) => {
     "pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
 
   const encodedAddress = encodeURIComponent(address);
+
+  // if there is no address return a default image.
+  if (encodedAddress === "") {
+    return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
+  }
+
   const placeUrl =
     "https://api.mapbox.com/geocoding/v5/mapbox.places/" +
     encodedAddress +
     `.json?access_token=${token}&limit=1`;
 
+  // TODO: More type Safetly
   const place = await (await fetch(placeUrl)).json();
-  // TODO: More type safelty
-  const center = place.features[0].center;
 
-  if (center.length !== 2) {
+  if (
+    place.features &&
+    place.features.length >= 1 &&
+    place.features[0].center.length !== 2
+  ) {
     return "";
   }
+
+  const center = place.features[0].center;
   const url = `https://api.mapbox.com/styles/v1/mapbox/${type}/static/${center.join(
     ","
   )},${zoom},0,0/600x600?access_token=${token}`;

@@ -61,6 +61,11 @@ const generateUrl = ({
 }: GoogleMapOptions) => {
   const encodedAddress = encodeURIComponent(address);
 
+  // if there is no address return a default image.
+  if (encodedAddress === "") {
+    return "https://maps.googleapis.com/maps/api/staticmap?center=San%20Francisco%20US&zoom=15&size=600x600&maptype=roadmap&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk";
+  }
+
   const style = convert(json);
 
   const url =
