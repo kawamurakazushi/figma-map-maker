@@ -16,6 +16,8 @@ interface MapboxOptions {
   address: string;
   type: MapType;
   zoom: number;
+  bearing: number;
+  pitch: number;
 }
 
 interface InternalStore {
@@ -38,6 +40,16 @@ interface InputTypeAction {
   value: MapType;
 }
 
+interface InputBearingAction {
+  type: "INPUT_BEARING";
+  value: number;
+}
+
+interface InputPitchAction {
+  type: "INPUT_PITCH";
+  value: number;
+}
+
 interface InputOptionsAction {
   type: "INPUT_OPTIONS";
   value: MapboxOptions;
@@ -53,9 +65,17 @@ type Action =
   | SetUrlAction
   | InputZoomAction
   | InputTypeAction
+  | InputBearingAction
+  | InputPitchAction
   | InputOptionsAction;
 
-const generateUrl = async ({ address, zoom, type }: MapboxOptions) => {
+const generateUrl = async ({
+  address,
+  zoom,
+  type,
+  bearing,
+  pitch
+}: MapboxOptions) => {
   const token =
     "pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
 
@@ -63,7 +83,7 @@ const generateUrl = async ({ address, zoom, type }: MapboxOptions) => {
 
   // if there is no address return a default image.
   if (encodedAddress === "") {
-    return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
+    return "https://api.mapbox.com/styles/v1/mapbox/light-v10/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
   }
 
   const placeUrl =
@@ -85,7 +105,7 @@ const generateUrl = async ({ address, zoom, type }: MapboxOptions) => {
   const center = place.features[0].center;
   const url = `https://api.mapbox.com/styles/v1/mapbox/${type}/static/${center.join(
     ","
-  )},${zoom},0,0/600x600?access_token=${token}`;
+  )},${zoom},${bearing},${pitch}/600x600?access_token=${token}`;
 
   return url;
 };
@@ -116,6 +136,18 @@ const useMapbox = (): [Store, Dispatch] => {
             options: { ...state.options, zoom: action.value }
           };
 
+        case "INPUT_BEARING":
+          return {
+            ...state,
+            options: { ...state.options, bearing: action.value }
+          };
+
+        case "INPUT_PITCH":
+          return {
+            ...state,
+            options: { ...state.options, pitch: action.value }
+          };
+
         case "INPUT_OPTIONS":
           return {
             ...state,
@@ -136,7 +168,9 @@ const useMapbox = (): [Store, Dispatch] => {
       options: {
         address: "",
         zoom: 10,
-        type: "streets-v11"
+        type: "light-v10",
+        bearing: 0,
+        pitch: 0
       },
       url: ""
     }
