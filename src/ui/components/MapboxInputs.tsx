@@ -36,6 +36,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
         <Label>Style</Label>
         <div style={{ padding: "0 16px" }}>
           <select
+            className="select-menu"
             onChange={(e: any) =>
               dispatch({
                 type: "INPUT_TYPE",

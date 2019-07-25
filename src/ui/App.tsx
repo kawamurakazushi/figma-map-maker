@@ -14,12 +14,7 @@ type Options = GoogleMapOptions | MapboxOptions;
 type Tab = "googleMap" | "mapbox";
 
 interface Store {
-  error: boolean;
   tab: Tab;
-}
-
-interface ErrorAction {
-  type: "ERROR";
 }
 
 interface ChangeTabAction {
@@ -27,7 +22,7 @@ interface ChangeTabAction {
   tab: Tab;
 }
 
-type Action = ErrorAction | ChangeTabAction;
+type Action = ChangeTabAction;
 
 const send = async (host: Tab, url: string, options: Options) => {
   const response = await fetch(url);
@@ -72,9 +67,6 @@ const App = () => {
   const [store, dispatch] = useReducer<Store, Action>(
     (state, action) => {
       switch (action.type) {
-        case "ERROR":
-          return { ...state, error: true };
-
         case "CHANGE_TAB":
           return { ...state, tab: action.tab };
 
@@ -83,7 +75,6 @@ const App = () => {
       }
     },
     {
-      error: false,
       tab: "googleMap"
     }
   );
@@ -111,10 +102,6 @@ const App = () => {
           googleDispatch({ type: "INPUT_OPTIONS", value: options.googleMap });
           dispatch({ type: "CHANGE_TAB", tab: "googleMap" });
         }
-      }
-
-      if (msg.type === "error") {
-        dispatch({ type: "ERROR" });
       }
     };
   }, []);
@@ -169,14 +156,6 @@ const App = () => {
             }
           />
         </div>
-        {store.error && (
-          <p
-            className="type--12-pos"
-            style={{ color: "#f24822", marginLeft: 8 }}
-          >
-            Please select at least one layer.
-          </p>
-        )}
         <div
           style={{
             display: "flex",
