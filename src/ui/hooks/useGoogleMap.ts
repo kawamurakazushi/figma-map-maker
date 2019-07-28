@@ -1,4 +1,4 @@
-import { useReducer } from "preact/hooks";
+import { useReducer, useEffect } from "preact/hooks";
 
 import { convert } from "../googleStyleConverter";
 
@@ -136,6 +136,31 @@ const useGoogleMap = (): [Store, Dispatch] => {
       }
     }
   );
+
+  const url = generateUrl(store.options);
+
+  useEffect(() => {
+    const f = async () => {
+      if (store.options.address !== "") {
+        const response = await fetch(url);
+        const buffer = await response.arrayBuffer();
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "preview",
+              image: new Uint8Array(buffer),
+              options: {
+                googleMap: store.options
+              }
+            }
+          },
+          "*"
+        );
+      }
+    };
+
+    f();
+  }, [store.options]);
 
   return [
     {

@@ -34,7 +34,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       <Line />
       <div>
         <Label>Style</Label>
-        <div style={{ padding: "0 16px" }}>
+        <div style={{ padding: "4px 16px 0" }}>
           <select
             className="select-menu"
             onChange={(e: any) =>
@@ -46,9 +46,9 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
             value={store.options.type}
           >
             {[
+              { label: "Mapbox Streets", value: "streets-v11" },
               { label: "Mapbox Light", value: "light-v10" },
               { label: "Mapbox Dark", value: "dark-v10" },
-              { label: "Mapbox Streets", value: "streets-v11" },
               { label: "Mapbox Outdoors", value: "outdoors-v11" },
               { label: "Mapbox Satellite", value: "satellite-v9" },
               {

@@ -6,7 +6,7 @@ const Line = () => (
       height: 1,
       width: "100%",
       backgroundColor: "rgba(0, 0, 0, 0.1)",
-      margin: "16px 0"
+      margin: "10px 0"
     }}
   ></div>
 );

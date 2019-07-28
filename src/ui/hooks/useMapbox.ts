@@ -83,7 +83,7 @@ const generateUrl = async ({
 
   // if there is no address return a default image.
   if (encodedAddress === "") {
-    return "https://api.mapbox.com/styles/v1/mapbox/light-v10/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
+    return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
   }
 
   const placeUrl =
@@ -168,7 +168,7 @@ const useMapbox = (): [Store, Dispatch] => {
       options: {
         address: "",
         zoom: 10,
-        type: "light-v10",
+        type: "streets-v11",
         bearing: 0,
         pitch: 0
       },
@@ -184,6 +184,29 @@ const useMapbox = (): [Store, Dispatch] => {
 
     f();
   }, [store.options]);
+
+  useEffect(() => {
+    const f = async () => {
+      if (store.options.address !== "") {
+        const response = await fetch(store.url);
+        const buffer = await response.arrayBuffer();
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: "preview",
+              image: new Uint8Array(buffer),
+              options: {
+                mapbox: store.options
+              }
+            }
+          },
+          "*"
+        );
+      }
+    };
+
+    f();
+  }, [store.url]);
 
   return [
     {

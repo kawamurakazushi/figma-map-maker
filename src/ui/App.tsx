@@ -6,6 +6,8 @@ import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
 import { MapboxInputs } from "./components/MapboxInputs";
 import { GoogleMapInputs } from "./components/GoogleMapInputs";
 import { Line } from "./components/Line";
+import { ChevronsLeft } from "./icons/ChevronsLeft";
+import { ChevronsRight } from "./icons/ChevronsRight";
 
 import "./figma-ui.min.css";
 
@@ -15,6 +17,7 @@ type Tab = "googleMap" | "mapbox";
 
 interface Store {
   tab: Tab;
+  hidePreview: boolean;
 }
 
 interface ChangeTabAction {
@@ -22,7 +25,15 @@ interface ChangeTabAction {
   tab: Tab;
 }
 
-type Action = ChangeTabAction;
+interface HidePreviewAction {
+  type: "HIDE_PREVIEW";
+}
+
+interface ShowPreviewAction {
+  type: "SHOW_PREVIEW";
+}
+
+type Action = ChangeTabAction | HidePreviewAction | ShowPreviewAction;
 
 const send = async (host: Tab, url: string, options: Options) => {
   const response = await fetch(url);
@@ -57,7 +68,7 @@ const Tab = ({
       cursor: "default"
     }}
     onClick={onClick}
-    className="type--12-pos-medium"
+    className="type--11-pos-medium"
   >
     {children}
   </div>
@@ -70,12 +81,19 @@ const App = () => {
         case "CHANGE_TAB":
           return { ...state, tab: action.tab };
 
+        case "HIDE_PREVIEW":
+          return { ...state, hidePreview: true };
+
+        case "SHOW_PREVIEW":
+          return { ...state, hidePreview: false };
+
         default:
           return state;
       }
     },
     {
-      tab: "googleMap"
+      tab: "googleMap",
+      hidePreview: false
     }
   );
 
@@ -86,12 +104,20 @@ const App = () => {
     onmessage = event => {
       const msg = event.data.pluginMessage;
 
-      if (msg.type === "initial") {
-        if (!msg.data) {
+      if (msg.type === "set-preview") {
+        if (msg.preview) {
+          dispatch({ type: "SHOW_PREVIEW" });
+        } else {
+          dispatch({ type: "HIDE_PREVIEW" });
+        }
+      }
+
+      if (msg.type === "set-options") {
+        if (!msg.options) {
           return;
         }
 
-        const options = JSON.parse(msg.data);
+        const options = JSON.parse(msg.options);
 
         if (options.mapbox) {
           mapboxDispatch({ type: "INPUT_OPTIONS", value: options.mapbox });
@@ -114,58 +140,79 @@ const App = () => {
         flexDirection: "row"
       }}
     >
-      <div style={{ width: 300 }}>
-        <div style={{ display: "flex", padding: "0 16px", marginTop: 16 }}>
-          <Tab
-            onClick={() => dispatch({ type: "CHANGE_TAB", tab: "googleMap" })}
-            active={store.tab === "googleMap"}
+      <div style={{ width: 300, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, overflow: "auto" }}>
+          <div
+            style={{
+              display: "flex",
+              padding: "0 16px",
+              marginTop: 12,
+              alignItems: "center"
+            }}
           >
-            Google Maps
-          </Tab>
-          <Tab
-            onClick={() => dispatch({ type: "CHANGE_TAB", tab: "mapbox" })}
-            active={store.tab === "mapbox"}
-          >
-            Mapbox
-          </Tab>
+            <Tab
+              onClick={() => dispatch({ type: "CHANGE_TAB", tab: "googleMap" })}
+              active={store.tab === "googleMap"}
+            >
+              Google Maps
+            </Tab>
+            <Tab
+              onClick={() => dispatch({ type: "CHANGE_TAB", tab: "mapbox" })}
+              active={store.tab === "mapbox"}
+            >
+              Mapbox
+            </Tab>
+
+            <div
+              style={{ display: "flex", flex: 1, flexDirection: "row-reverse" }}
+            >
+              <button
+                style={{ padding: 0, width: 20, height: 20 }}
+                onClick={() => {
+                  if (store.hidePreview) {
+                    parent.postMessage(
+                      {
+                        pluginMessage: {
+                          type: "show-preview"
+                        }
+                      },
+                      "*"
+                    );
+                    dispatch({ type: "SHOW_PREVIEW" });
+                  }
+
+                  if (!store.hidePreview) {
+                    parent.postMessage(
+                      {
+                        pluginMessage: {
+                          type: "hide-preview"
+                        }
+                      },
+                      "*"
+                    );
+                    dispatch({ type: "HIDE_PREVIEW" });
+                  }
+                }}
+              >
+                {store.hidePreview ? (
+                  <ChevronsRight size={12} />
+                ) : (
+                  <ChevronsLeft size={12} />
+                )}
+              </button>
+            </div>
+          </div>
+          <Line />
+          {store.tab === "googleMap" ? (
+            <GoogleMapInputs store={googleStore} dispatch={googleDispatch} />
+          ) : store.tab === "mapbox" ? (
+            <MapboxInputs store={mapboxStore} dispatch={mapboxDispatch} />
+          ) : null}
         </div>
-        <Line />
-        {store.tab === "googleMap" ? (
-          <GoogleMapInputs store={googleStore} dispatch={googleDispatch} />
-        ) : store.tab === "mapbox" ? (
-          <MapboxInputs store={mapboxStore} dispatch={mapboxDispatch} />
-        ) : null}
-      </div>
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column"
-        }}
-      >
-        <div>
-          <img
-            style={{ width: "100%", height: 500 }}
-            src={
-              store.tab === "googleMap"
-                ? googleStore.url
-                : store.tab === "mapbox"
-                ? mapboxStore.url
-                : null
-            }
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
+        <div style={{ padding: "8px 16px" }}>
           <button
             className="button button--primary"
-            style={{ width: "100px" }}
+            style={{ width: "100%" }}
             onClick={() => {
               if (store.tab === "googleMap") {
                 send("googleMap", googleStore.url, googleStore.options);
@@ -180,6 +227,39 @@ const App = () => {
           </button>
         </div>
       </div>
+      {!store.hidePreview && (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column"
+          }}
+        >
+          <div
+            className="type--11-pos-medium"
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              borderBottom: "1px solid rgba(0,0,0,0.1)"
+            }}
+          >
+            Preview
+          </div>
+
+          <img
+            style={{ width: "100%", height: 500 }}
+            src={
+              store.tab === "googleMap"
+                ? googleStore.url
+                : store.tab === "mapbox"
+                ? mapboxStore.url
+                : null
+            }
+          />
+        </div>
+      )}
     </div>
   );
 };
