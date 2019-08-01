@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRef, useEffect } from "react";
+import { Select, Input, Checkbox } from "figma-styled-components";
 
-import { Select, Input, Checkbox } from "../figma";
 import { Dispatch, Store } from "../hooks/useGoogleMap";
 import { Line } from "./Line";
 import { Label } from "./Label";
@@ -41,7 +41,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
         <Label label="Map Type"></Label>
         <div style={{ padding: "4px 8px 0" }}>
           <Select
-            onChange={({ value }) => {
+            onChange={({ value }: { value: string }) => {
               if (
                 "roadmap" === value ||
                 "satellite" === value ||
@@ -70,7 +70,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
         <div style={{ padding: "4px 8px 0" }}>
           <Input
             type="number"
-            onChange={e => {
+            onChange={(e: any) => {
               const val = e.target.value;
               if (val !== "") {
                 dispatch({

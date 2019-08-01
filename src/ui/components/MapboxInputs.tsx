@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useRef, useEffect } from "react";
-import { Select } from "../figma";
+import { Select } from "figma-styled-components";
 
 import { Dispatch, Store } from "../hooks/useMapbox";
 import { Line } from "./Line";
@@ -41,7 +41,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
         <Label label="Style"></Label>
         <div style={{ padding: "4px 8px 0" }}>
           <Select
-            onChange={({ value }) => {
+            onChange={({ value }: { value: string }) => {
               if (
                 value === "streets-v11" ||
                 value === "light-v10" ||

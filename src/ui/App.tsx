@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useEffect, useReducer, Reducer } from "react";
 import { render } from "react-dom";
-import { Button } from "./figma";
+import { Button } from "figma-styled-components";
 
 import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
 import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
