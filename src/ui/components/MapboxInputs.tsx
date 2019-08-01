@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useRef, useEffect } from "react";
+import { Select } from "../figma";
 
 import { Dispatch, Store } from "../hooks/useMapbox";
 import { Line } from "./Line";
@@ -39,17 +40,24 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       <div>
         <Label label="Style"></Label>
         <div style={{ padding: "4px 16px 0" }}>
-          <select
-            className="select-menu"
-            onChange={(e: any) =>
-              dispatch({
-                type: "INPUT_TYPE",
-                value: e.target.value
-              })
-            }
+          <Select
+            onChange={({ value }) => {
+              if (
+                value === "streets-v11" ||
+                value === "light-v10" ||
+                value === "dark-v10" ||
+                value === "outdoors-v11" ||
+                value === "satellite-v9" ||
+                value === "satellite-streets-v11"
+              ) {
+                dispatch({
+                  type: "INPUT_TYPE",
+                  value
+                });
+              }
+            }}
             value={store.options.type}
-          >
-            {[
+            options={[
               { label: "Mapbox Streets", value: "streets-v11" },
               { label: "Mapbox Light", value: "light-v10" },
               { label: "Mapbox Dark", value: "dark-v10" },
@@ -59,10 +67,8 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
                 label: "Mapbox Satellite Streets",
                 value: "satellite-streets-v11"
               }
-            ].map(s => (
-              <option value={s.value}>{s.label}</option>
-            ))}
-          </select>
+            ]}
+          ></Select>
         </div>
       </div>
       <Line />
