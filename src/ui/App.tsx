@@ -1,5 +1,6 @@
-import { h, render, ComponentChildren } from "preact";
-import { useEffect, useReducer } from "preact/hooks";
+import * as React from "react";
+import { useEffect, useReducer, Reducer } from "react";
+import { render } from "react-dom";
 
 import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
 import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
@@ -17,7 +18,7 @@ type Tab = "googleMap" | "mapbox";
 
 interface Store {
   tab: Tab;
-  hidePreview: boolean;
+  hidePreview: boolean | null;
 }
 
 interface ChangeTabAction {
@@ -53,12 +54,12 @@ const send = async (host: Tab, url: string, options: Options) => {
 };
 
 const Tab = ({
-  children,
+  label,
   active,
   onClick
 }: {
   onClick: () => void;
-  children: ComponentChildren;
+  label: string;
   active: boolean;
 }) => (
   <div
@@ -70,12 +71,12 @@ const Tab = ({
     onClick={onClick}
     className="type--11-pos-medium"
   >
-    {children}
+    {label}
   </div>
 );
 
 const App = () => {
-  const [store, dispatch] = useReducer<Store, Action>(
+  const [store, dispatch] = useReducer<Reducer<Store, Action>>(
     (state, action) => {
       switch (action.type) {
         case "CHANGE_TAB":
@@ -93,7 +94,7 @@ const App = () => {
     },
     {
       tab: "googleMap",
-      hidePreview: false
+      hidePreview: null
     }
   );
 
@@ -101,7 +102,7 @@ const App = () => {
   const [mapboxStore, mapboxDispatch] = useMapbox();
 
   useEffect(() => {
-    onmessage = event => {
+    window.onmessage = event => {
       const msg = event.data.pluginMessage;
 
       if (msg.type === "set-preview") {
@@ -130,6 +131,11 @@ const App = () => {
         }
       }
     };
+
+    window.parent.postMessage(
+      { pluginMessage: { type: "fetch-initial-data" } },
+      "*"
+    );
   }, []);
 
   return (
@@ -153,15 +159,13 @@ const App = () => {
             <Tab
               onClick={() => dispatch({ type: "CHANGE_TAB", tab: "googleMap" })}
               active={store.tab === "googleMap"}
-            >
-              Google Maps
-            </Tab>
+              label="Google Maps"
+            ></Tab>
             <Tab
               onClick={() => dispatch({ type: "CHANGE_TAB", tab: "mapbox" })}
               active={store.tab === "mapbox"}
-            >
-              Mapbox
-            </Tab>
+              label="Mapbox"
+            ></Tab>
 
             <div
               style={{ display: "flex", flex: 1, flexDirection: "row-reverse" }}
@@ -194,11 +198,12 @@ const App = () => {
                   }
                 }}
               >
-                {store.hidePreview ? (
-                  <Hidden size={20} />
-                ) : (
-                  <Visible size={20} />
-                )}
+                {store.hidePreview !== null &&
+                  (store.hidePreview ? (
+                    <Hidden size={20} />
+                  ) : (
+                    <Visible size={20} />
+                  ))}
               </div>
             </div>
           </div>
@@ -255,7 +260,7 @@ const App = () => {
                 ? googleStore.url
                 : store.tab === "mapbox"
                 ? mapboxStore.url
-                : null
+                : undefined
             }
           />
         </div>

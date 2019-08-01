@@ -1,4 +1,4 @@
-import { h } from "preact";
+import * as React from "react";
 
 const ChevronsLeft = ({ size = 24 }: { size: number }) => (
   <svg

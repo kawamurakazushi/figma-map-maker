@@ -1,12 +1,12 @@
-const convert = (jsonString: string) => {
+const convert = (jsonString: string): string => {
   let items = [];
   const separator = "|";
 
-  const isColor = value => {
+  const isColor = (value: string) => {
     return /^#[0-9a-f]{6}$/i.test(value.toString());
   };
 
-  const toColor = value => {
+  const toColor = (value: string) => {
     return "0x" + value.slice(1);
   };
 
@@ -14,7 +14,7 @@ const convert = (jsonString: string) => {
   try {
     json = JSON.parse(jsonString);
   } catch (e) {
-    return;
+    return "";
   }
 
   for (let i = 0; i < json.length; i++) {

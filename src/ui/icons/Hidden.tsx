@@ -1,4 +1,4 @@
-import { h } from "preact";
+import * as React from "react";
 
 const Hidden = ({ size = 32 }: { size: number }) => (
   <svg

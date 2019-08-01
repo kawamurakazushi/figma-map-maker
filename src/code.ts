@@ -13,28 +13,36 @@ const main = () => {
       width: previewMode ? width : collapsedWidth,
       height
     });
-
-    figma.ui.postMessage({
-      type: "set-preview",
-      preview: previewMode
-    });
-
-    const initialSelection = figma.currentPage.selection;
-    if (initialSelection.length >= 1) {
-      figma.ui.postMessage({
-        type: "set-options",
-        options: initialSelection[0].getPluginData(optionsKey)
-      });
-    }
   });
 };
 
 main();
 
 figma.ui.onmessage = msg => {
+  if (msg.type === "fetch-initial-data") {
+    figma.clientStorage.getAsync(previewKey).then(preview => {
+      const previewMode = !(preview && preview === "hide");
+
+      figma.ui.postMessage({
+        type: "set-preview",
+        preview: previewMode
+      });
+
+      const initialSelection = figma.currentPage.selection;
+      if (initialSelection.length >= 1) {
+        figma.ui.postMessage({
+          type: "set-options",
+          options: initialSelection[0].getPluginData(optionsKey)
+        });
+      }
+    });
+  }
+
   if (msg.type === "hide-preview") {
-    figma.clientStorage.setAsync(previewKey, "hide");
-    figma.ui.resize(collapsedWidth, height);
+    figma.clientStorage.getAsync(previewKey).then(preview => {
+      figma.clientStorage.setAsync(previewKey, "hide");
+      figma.ui.resize(collapsedWidth, height);
+    });
   }
 
   if (msg.type === "show-preview") {

@@ -1,8 +1,8 @@
-import { h } from "preact";
+import * as React from "react";
 
-const Label = ({ children }) => (
+const Label = ({ label }: { label: string }) => (
   <p className="type--11-pos-bold" style={{ padding: "0 8px", margin: "8px" }}>
-    {children}
+    {label}
   </p>
 );
 

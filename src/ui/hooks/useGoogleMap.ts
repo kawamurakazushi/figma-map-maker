@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "preact/hooks";
+import { useReducer, useEffect, Reducer } from "react";
 
 import { convert } from "../googleStyleConverter";
 
@@ -7,7 +7,7 @@ interface GoogleMapOptions {
   type: "roadmap" | "satellite" | "hybrid" | "terrain";
   marker: boolean;
   zoom: number;
-  json?: string;
+  json: string;
 }
 
 interface InternalStore {
@@ -66,12 +66,10 @@ const generateUrl = ({
     return "https://maps.googleapis.com/maps/api/staticmap?center=San%20Francisco%20US&zoom=15&size=600x600&maptype=roadmap&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk";
   }
 
-  const style = convert(json);
-
   const url =
     `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=${zoom}&size=600x600&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
     (marker ? `&markers=color:red|${encodedAddress}` : "") +
-    (style ? style : "");
+    (json ? convert(json) : "");
 
   return url;
 };
@@ -84,7 +82,7 @@ interface Store extends InternalStore {
 type Dispatch = (action: Action) => void;
 
 const useGoogleMap = (): [Store, Dispatch] => {
-  const [store, dispatch] = useReducer<InternalStore, Action>(
+  const [store, dispatch] = useReducer<Reducer<InternalStore, Action>>(
     (state, action) => {
       switch (action.type) {
         case "INPUT_ADDRESS":
@@ -118,9 +116,10 @@ const useGoogleMap = (): [Store, Dispatch] => {
           };
 
         case "INPUT_OPTIONS":
+          console.log(action.value.json);
           return {
             ...state,
-            options: action.value
+            options: { ...action.value }
           };
 
         default:
@@ -132,7 +131,8 @@ const useGoogleMap = (): [Store, Dispatch] => {
         address: "",
         type: "roadmap",
         marker: false,
-        zoom: 15
+        zoom: 15,
+        json: ""
       }
     }
   );
@@ -166,7 +166,7 @@ const useGoogleMap = (): [Store, Dispatch] => {
     {
       url: generateUrl(store.options),
       jsonIsInvalid:
-        store.options.json && convert(store.options.json) === undefined,
+        store.options.json !== "" && convert(store.options.json) === "",
       ...store
     },
     dispatch

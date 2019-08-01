@@ -1,5 +1,5 @@
-import { h, options } from "preact";
-import { useRef, useEffect } from "preact/hooks";
+import * as React from "react";
+import { useRef, useEffect } from "react";
 
 import { Dispatch, Store } from "../hooks/useMapbox";
 import { Line } from "./Line";
@@ -11,14 +11,18 @@ interface Props {
 }
 
 const MapboxInputs = ({ store, dispatch }: Props) => {
-  const input = useRef(null);
+  const input = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    input.current.focus();
+    if (input.current !== null) {
+      input.current.focus();
+    }
   }, []);
+
   return (
     <div>
       <div>
-        <Label>Address</Label>
+        <Label label="Address"></Label>
         <div style={{ padding: "0 8px" }}>
           <input
             ref={input}
@@ -33,7 +37,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Style</Label>
+        <Label label="Style"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <select
             className="select-menu"
@@ -63,7 +67,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Zoom Level</Label>
+        <Label label="Zoom Level"></Label>
         <div style={{ padding: "0 8px" }}>
           <input
             type="number"
@@ -78,7 +82,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Bearing</Label>
+        <Label label="Bearing"></Label>
         <div style={{ padding: "0 8px" }}>
           <div
             style={{
@@ -103,7 +107,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Pitch</Label>
+        <Label label="Pitch"></Label>
         <div style={{ padding: "0 8px" }}>
           <div
             style={{

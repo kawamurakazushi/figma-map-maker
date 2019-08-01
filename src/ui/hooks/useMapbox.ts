@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "preact/hooks";
+import { useReducer, useEffect, Reducer } from "react";
 
 type MapType =
   | "streets-v11"
@@ -115,7 +115,7 @@ interface Store extends InternalStore {}
 type Dispatch = (action: Action) => void;
 
 const useMapbox = (): [Store, Dispatch] => {
-  const [store, dispatch] = useReducer<InternalStore, Action>(
+  const [store, dispatch] = useReducer<Reducer<InternalStore, Action>>(
     (state, action) => {
       switch (action.type) {
         case "INPUT_ADDRESS":

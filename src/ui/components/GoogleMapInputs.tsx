@@ -1,5 +1,5 @@
-import { h } from "preact";
-import { useRef, useEffect } from "preact/hooks";
+import * as React from "react";
+import { useRef, useEffect } from "react";
 
 import { Dispatch, Store } from "../hooks/useGoogleMap";
 import { Line } from "./Line";
@@ -11,14 +11,20 @@ interface Props {
 }
 
 const GoogleMapInputs = ({ store, dispatch }: Props) => {
-  const input = useRef(null);
+  const input = useRef<HTMLInputElement>(null);
+
+  console.log("store", store);
+
   useEffect(() => {
-    input.current.focus();
+    if (input.current) {
+      input.current.focus();
+    }
   }, []);
+
   return (
     <div>
       <div>
-        <Label>Address</Label>
+        <Label label="Address"></Label>
         <div style={{ padding: "0 8px" }}>
           <input
             ref={input}
@@ -33,7 +39,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Map Type</Label>
+        <Label label="Map Type"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <select
             onChange={(e: any) =>
@@ -54,7 +60,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Zoom Level</Label>
+        <Label label="Zoom Level"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <button
             disabled={store.options.zoom <= 0}
@@ -101,7 +107,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Custom Style</Label>
+        <Label label="Custom Style"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <textarea
             className="textarea"
