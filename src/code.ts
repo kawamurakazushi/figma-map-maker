@@ -39,7 +39,7 @@ figma.ui.onmessage = msg => {
   }
 
   if (msg.type === "hide-preview") {
-    figma.clientStorage.getAsync(previewKey).then(preview => {
+    figma.clientStorage.getAsync(previewKey).then(_ => {
       figma.clientStorage.setAsync(previewKey, "hide");
       figma.ui.resize(collapsedWidth, height);
     });

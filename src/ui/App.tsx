@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useEffect, useReducer, Reducer } from "react";
 import { render } from "react-dom";
+import { Button } from "./figma";
 
 import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
 import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
@@ -215,8 +216,8 @@ const App = () => {
           ) : null}
         </div>
         <div style={{ padding: "8px 16px" }}>
-          <button
-            className="button button--primary"
+          <Button
+            variant="primary"
             style={{ width: "100%" }}
             onClick={() => {
               if (store.tab === "googleMap") {
@@ -229,7 +230,7 @@ const App = () => {
             }}
           >
             Make Map
-          </button>
+          </Button>
         </div>
       </div>
       {!store.hidePreview && (
