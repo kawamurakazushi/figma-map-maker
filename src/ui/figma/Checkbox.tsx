@@ -78,6 +78,5 @@ export const Checkbox = styled(CheckboxFactory)`
   align-items: center;
 
   ${Text} {
-    padding-top: 4px;
   }
 `;

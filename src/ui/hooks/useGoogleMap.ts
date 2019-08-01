@@ -6,7 +6,7 @@ interface GoogleMapOptions {
   address: string;
   type: "roadmap" | "satellite" | "hybrid" | "terrain";
   marker: boolean;
-  zoom: number;
+  zoom: number | "";
   json: string;
 }
 
@@ -16,7 +16,7 @@ interface InternalStore {
 
 interface InputZoomAction {
   type: "INPUT_ZOOM";
-  value: number;
+  value: number | "";
 }
 
 interface InputMapTypeAction {

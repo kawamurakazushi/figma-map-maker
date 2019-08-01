@@ -215,7 +215,7 @@ const App = () => {
             <MapboxInputs store={mapboxStore} dispatch={mapboxDispatch} />
           ) : null}
         </div>
-        <div style={{ padding: "8px 16px" }}>
+        <div style={{ padding: "8px 16px 16px" }}>
           <Button
             variant="primary"
             style={{ width: "100%" }}
@@ -238,7 +238,6 @@ const App = () => {
           style={{
             flex: 1,
             display: "flex",
-            justifyContent: "space-between",
             flexDirection: "column"
           }}
         >
@@ -246,9 +245,9 @@ const App = () => {
             className="type--11-pos-medium"
             style={{
               display: "flex",
-              flex: 1,
               alignItems: "center",
-              borderBottom: "1px solid rgba(0,0,0,0.1)"
+              borderBottom: "1px solid rgba(0,0,0,0.1)",
+              height: 43
             }}
           >
             Preview

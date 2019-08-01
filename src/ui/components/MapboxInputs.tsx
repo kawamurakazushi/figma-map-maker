@@ -39,7 +39,7 @@ const MapboxInputs = ({ store, dispatch }: Props) => {
       <Line />
       <div>
         <Label label="Style"></Label>
-        <div style={{ padding: "4px 16px 0" }}>
+        <div style={{ padding: "4px 8px 0" }}>
           <Select
             onChange={({ value }) => {
               if (

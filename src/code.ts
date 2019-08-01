@@ -2,7 +2,7 @@ const optionsKey = "options";
 const previewKey = "preview";
 
 const width = 800;
-const height = 543;
+const height = 560;
 const collapsedWidth = 300;
 
 const main = () => {

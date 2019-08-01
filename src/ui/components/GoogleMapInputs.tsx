@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useRef, useEffect } from "react";
 
-import { Select } from "../figma";
+import { Select, Input, Checkbox } from "../figma";
 import { Dispatch, Store } from "../hooks/useGoogleMap";
 import { Line } from "./Line";
 import { Label } from "./Label";
@@ -39,7 +39,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       <Line />
       <div>
         <Label label="Map Type"></Label>
-        <div style={{ padding: "4px 16px 0" }}>
+        <div style={{ padding: "4px 8px 0" }}>
           <Select
             onChange={({ value }) => {
               if (
@@ -67,49 +67,39 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       <Line />
       <div>
         <Label label="Zoom Level"></Label>
-        <div style={{ padding: "4px 16px 0" }}>
-          <button
-            disabled={store.options.zoom <= 0}
-            onClick={() =>
-              dispatch({
-                type: "INPUT_ZOOM",
-                value: store.options.zoom - 1
-              })
-            }
-          >
-            -
-          </button>
-          <span className="type--12-pos" style={{ margin: "0 8px" }}>
-            {store.options.zoom}
-          </span>
-          <button
-            disabled={store.options.zoom >= 20}
-            onClick={() =>
-              dispatch({
-                type: "INPUT_ZOOM",
-                value: store.options.zoom + 1
-              })
-            }
-          >
-            +
-          </button>
+        <div style={{ padding: "4px 8px 0" }}>
+          <Input
+            type="number"
+            onChange={e => {
+              const val = e.target.value;
+              if (val !== "") {
+                dispatch({
+                  type: "INPUT_ZOOM",
+                  value: Number(e.target.value)
+                });
+              } else {
+                dispatch({
+                  type: "INPUT_ZOOM",
+                  value: ""
+                });
+              }
+            }}
+            value={store.options.zoom}
+          />
         </div>
       </div>
-      <div style={{ margin: "16px" }}>
-        <label className="type--12-pos">
-          <input
-            style={{ marginRight: 8 }}
-            onChange={(e: any) =>
-              dispatch({
-                type: "INPUT_MARKER",
-                value: e.target.checked
-              })
-            }
-            checked={store.options.marker}
-            type="checkbox"
-          />
-          Show Marker
-        </label>
+      <div style={{ padding: "0 6px" }}>
+        <Checkbox
+          checked={store.options.marker}
+          label="Show Maker"
+          onChange={(e: any) => {
+            console.log(e.target.checked);
+            dispatch({
+              type: "INPUT_MARKER",
+              value: e.target.checked
+            });
+          }}
+        />
       </div>
       <Line />
       <div>
