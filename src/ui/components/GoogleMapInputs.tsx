@@ -1,6 +1,7 @@
-import { h } from "preact";
-import { useRef, useEffect } from "preact/hooks";
+import * as React from "react";
+import { useRef, useEffect } from "react";
 
+import { Select } from "../figma";
 import { Dispatch, Store } from "../hooks/useGoogleMap";
 import { Line } from "./Line";
 import { Label } from "./Label";
@@ -11,14 +12,18 @@ interface Props {
 }
 
 const GoogleMapInputs = ({ store, dispatch }: Props) => {
-  const input = useRef(null);
+  const input = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    input.current.focus();
+    if (input.current) {
+      input.current.focus();
+    }
   }, []);
+
   return (
     <div>
       <div>
-        <Label>Address</Label>
+        <Label label="Address"></Label>
         <div style={{ padding: "0 8px" }}>
           <input
             ref={input}
@@ -33,28 +38,35 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Map Type</Label>
+        <Label label="Map Type"></Label>
         <div style={{ padding: "4px 16px 0" }}>
-          <select
-            onChange={(e: any) =>
-              dispatch({
-                type: "INPUT_MAP_TYPE",
-                value: e.target.value
-              })
-            }
+          <Select
+            onChange={({ value }) => {
+              if (
+                "roadmap" === value ||
+                "satellite" === value ||
+                "hybrid" === value ||
+                "terrain" === value
+              ) {
+                dispatch({
+                  type: "INPUT_MAP_TYPE",
+                  value
+                });
+              }
+            }}
             value={store.options.type}
-          >
-            {["roadmap", "satellite", "hybrid", "terrain"].map(t => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+            options={[
+              { label: "Roadmap", value: "roadmap" },
+              { label: "Satellite", value: "satellite" },
+              { label: "Hybrid", value: "hybrid" },
+              { label: "Terrain", value: "terrain" }
+            ]}
+          ></Select>
         </div>
       </div>
       <Line />
       <div>
-        <Label>Zoom Level</Label>
+        <Label label="Zoom Level"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <button
             disabled={store.options.zoom <= 0}
@@ -101,7 +113,7 @@ const GoogleMapInputs = ({ store, dispatch }: Props) => {
       </div>
       <Line />
       <div>
-        <Label>Custom Style</Label>
+        <Label label="Custom Style"></Label>
         <div style={{ padding: "4px 16px 0" }}>
           <textarea
             className="textarea"
