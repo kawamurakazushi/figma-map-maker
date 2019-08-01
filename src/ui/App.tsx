@@ -6,8 +6,8 @@ import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
 import { MapboxInputs } from "./components/MapboxInputs";
 import { GoogleMapInputs } from "./components/GoogleMapInputs";
 import { Line } from "./components/Line";
-import { ChevronsLeft } from "./icons/ChevronsLeft";
-import { ChevronsRight } from "./icons/ChevronsRight";
+import { Hidden } from "./icons/Hidden";
+import { Visible } from "./icons/Visible";
 
 import "./figma-ui.min.css";
 
@@ -166,8 +166,8 @@ const App = () => {
             <div
               style={{ display: "flex", flex: 1, flexDirection: "row-reverse" }}
             >
-              <button
-                style={{ padding: 0, width: 20, height: 20 }}
+              <div
+                // style={{ padding: 0, width: 20, height: 20 }}
                 onClick={() => {
                   if (store.hidePreview) {
                     parent.postMessage(
@@ -195,11 +195,11 @@ const App = () => {
                 }}
               >
                 {store.hidePreview ? (
-                  <ChevronsRight size={12} />
+                  <Hidden size={20} />
                 ) : (
-                  <ChevronsLeft size={12} />
+                  <Visible size={20} />
                 )}
-              </button>
+              </div>
             </div>
           </div>
           <Line />
