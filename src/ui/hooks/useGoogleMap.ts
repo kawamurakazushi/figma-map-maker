@@ -1,4 +1,5 @@
 import { useReducer, useEffect, Reducer } from "react";
+import { useDebounce } from "use-debounce";
 
 import { convert } from "../googleStyleConverter";
 
@@ -12,6 +13,7 @@ interface GoogleMapOptions {
 
 interface InternalStore {
   options: GoogleMapOptions;
+  url: string;
 }
 
 interface InputZoomAction {
@@ -44,13 +46,19 @@ interface InputOptionsAction {
   value: GoogleMapOptions;
 }
 
+interface SetUrlAction {
+  type: "SET_URL";
+  url: string;
+}
+
 type Action =
   | InputAddressAction
   | InputZoomAction
   | InputMarkerAction
   | InputMapTypeAction
   | InputJsonAction
-  | InputOptionsAction;
+  | InputOptionsAction
+  | SetUrlAction;
 
 const generateUrl = ({
   address,
@@ -63,11 +71,11 @@ const generateUrl = ({
 
   // if there is no address return a default image.
   if (encodedAddress === "") {
-    return "https://maps.googleapis.com/maps/api/staticmap?center=San%20Francisco%20US&zoom=15&size=600x600&maptype=roadmap&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk";
+    return "https://maps.googleapis.com/maps/api/staticmap?scale=2&center=San%20Francisco%20US&zoom=15&size=600x600&maptype=roadmap&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk";
   }
 
   const url =
-    `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=${zoom}&size=600x600&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
+    `https://maps.googleapis.com/maps/api/staticmap?scale=2&center=${encodedAddress}&zoom=${zoom}&size=600x600&maptype=${type}&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk` +
     (marker ? `&markers=color:red|${encodedAddress}` : "") +
     (json ? convert(json) : "");
 
@@ -116,10 +124,15 @@ const useGoogleMap = (): [Store, Dispatch] => {
           };
 
         case "INPUT_OPTIONS":
-          console.log(action.value.json);
           return {
             ...state,
             options: { ...action.value }
+          };
+
+        case "SET_URL":
+          return {
+            ...state,
+            url: action.url
           };
 
         default:
@@ -133,11 +146,14 @@ const useGoogleMap = (): [Store, Dispatch] => {
         marker: false,
         zoom: 15,
         json: ""
-      }
+      },
+      url:
+        "https://maps.googleapis.com/maps/api/staticmap?scale=2&center=San%20Francisco%20US&zoom=15&size=600x600&maptype=roadmap&key=AIzaSyCOHu6yxeJ1XAG6Rji_9j6kIaJVtUbrddk"
     }
   );
 
   const url = generateUrl(store.options);
+  const [debounceAddress] = useDebounce(store.options.address, 500);
 
   useEffect(() => {
     const f = async () => {
@@ -156,15 +172,22 @@ const useGoogleMap = (): [Store, Dispatch] => {
           },
           "*"
         );
+        dispatch({ type: "SET_URL", url });
       }
     };
 
     f();
-  }, [store.options]);
+  }, [
+    store.options.json,
+    store.options.marker,
+    store.options.marker,
+    store.options.type,
+    store.options.zoom,
+    debounceAddress
+  ]);
 
   return [
     {
-      url: generateUrl(store.options),
       jsonIsInvalid:
         store.options.json !== "" && convert(store.options.json) === "",
       ...store

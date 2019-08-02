@@ -1,4 +1,5 @@
 import { useReducer, useEffect, Reducer } from "react";
+import { useDebounce } from "use-debounce";
 
 type MapType =
   | "streets-v11"
@@ -83,7 +84,7 @@ const generateUrl = async ({
 
   // if there is no address return a default image.
   if (encodedAddress === "") {
-    return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/139.7263785,35.6652065,12,0,0/600x600?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
+    return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/139.7263785,35.6652065,12,0,0/500x500@2x?access_token=pk.eyJ1Ijoia2F3YW11cmFrYXp1c2hpIiwiYSI6ImNqeWF1ejRzcjAyaWgzbnAxbG43cWZoZHIifQ.8-5NAOmlWk3iQnrIJSPmbw";
   }
 
   const placeUrl =
@@ -105,7 +106,7 @@ const generateUrl = async ({
   const center = place.features[0].center;
   const url = `https://api.mapbox.com/styles/v1/mapbox/${type}/static/${center.join(
     ","
-  )},${zoom},${bearing},${pitch}/600x600?access_token=${token}`;
+  )},${zoom},${bearing},${pitch}/500x500@2x?access_token=${token}`;
 
   return url;
 };
@@ -167,7 +168,7 @@ const useMapbox = (): [Store, Dispatch] => {
     {
       options: {
         address: "",
-        zoom: 10,
+        zoom: 12,
         type: "streets-v11",
         bearing: 0,
         pitch: 0
@@ -176,6 +177,8 @@ const useMapbox = (): [Store, Dispatch] => {
     }
   );
 
+  const [debounceAddress] = useDebounce(store.options.address, 500);
+
   useEffect(() => {
     const f = async () => {
       const url = await generateUrl(store.options);
@@ -183,7 +186,13 @@ const useMapbox = (): [Store, Dispatch] => {
     };
 
     f();
-  }, [store.options]);
+  }, [
+    store.options.zoom,
+    store.options.type,
+    store.options.pitch,
+    store.options.bearing,
+    debounceAddress
+  ]);
 
   useEffect(() => {
     const f = async () => {
