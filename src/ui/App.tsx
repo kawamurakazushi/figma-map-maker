@@ -8,8 +8,8 @@ import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
 import { MapboxInputs } from "./components/MapboxInputs";
 import { GoogleMapInputs } from "./components/GoogleMapInputs";
 import { Line } from "./components/Line";
-import { Hidden } from "./icons/Hidden";
-import { Visible } from "./icons/Visible";
+import { ChevronsLeft } from "./icons/ChevronsLeft";
+import { ChevronsRight } from "./icons/ChevronsRight";
 
 import "./figma-ui.min.css";
 
@@ -201,9 +201,9 @@ const App = () => {
               >
                 {store.hidePreview !== null &&
                   (store.hidePreview ? (
-                    <Hidden size={20} />
+                    <ChevronsRight size={20} />
                   ) : (
-                    <Visible size={20} />
+                    <ChevronsLeft size={20} />
                   ))}
               </div>
             </div>
