@@ -1,3 +1,5 @@
+import "figma-plugin-types";
+
 const optionsKey = "options";
 const previewKey = "preview";
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useReducer, Reducer } from "react";
 import { render } from "react-dom";
 import { Button } from "figma-styled-components";
+import "figma-plugin-types";
 
 import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
 import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
@@ -103,7 +104,7 @@ const App = () => {
   const [mapboxStore, mapboxDispatch] = useMapbox();
 
   useEffect(() => {
-    window.onmessage = event => {
+    window.onmessage = (event: MessageEvent) => {
       const msg = event.data.pluginMessage;
 
       if (msg.type === "set-preview") {
