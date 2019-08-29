@@ -2,16 +2,16 @@ import * as React from "react";
 import { useEffect, useReducer, Reducer } from "react";
 import { render } from "react-dom";
 import { Button } from "figma-styled-components";
-import "figma-plugin-types";
 
-import { useGoogleMap, GoogleMapOptions } from "./hooks/useGoogleMap";
-import { useMapbox, MapboxOptions } from "./hooks/useMapbox";
+import { useGoogleMapContext, GoogleMapOptions } from "./hooks/useGoogleMap";
+import { useMapboxContext, MapboxOptions } from "./hooks/useMapbox";
 import { MapboxInputs } from "./components/MapboxInputs";
 import { GoogleMapInputs } from "./components/GoogleMapInputs";
 import { Line } from "./components/Line";
 import { ChevronsLeft } from "./icons/ChevronsLeft";
 import { ChevronsRight } from "./icons/ChevronsRight";
 
+import "figma-plugin-types";
 import "./figma-ui.min.css";
 
 type Options = GoogleMapOptions | MapboxOptions;
@@ -100,8 +100,8 @@ const App = () => {
     }
   );
 
-  const [googleStore, googleDispatch] = useGoogleMap();
-  const [mapboxStore, mapboxDispatch] = useMapbox();
+  const [googleStore, googleDispatch] = useGoogleMapContext();
+  const [mapboxStore, mapboxDispatch] = useMapboxContext();
 
   useEffect(() => {
     window.onmessage = (event: MessageEvent) => {
@@ -159,12 +159,28 @@ const App = () => {
             }}
           >
             <Tab
-              onClick={() => dispatch({ type: "CHANGE_TAB", tab: "googleMap" })}
+              onClick={() => {
+                if (store.tab === "mapbox") {
+                  googleDispatch({
+                    type: "INPUT_ADDRESS",
+                    value: mapboxStore.options.address
+                  });
+                }
+                dispatch({ type: "CHANGE_TAB", tab: "googleMap" });
+              }}
               active={store.tab === "googleMap"}
               label="Google Maps"
             ></Tab>
             <Tab
-              onClick={() => dispatch({ type: "CHANGE_TAB", tab: "mapbox" })}
+              onClick={() => {
+                if (store.tab === "googleMap") {
+                  mapboxDispatch({
+                    type: "INPUT_ADDRESS",
+                    value: googleStore.options.address
+                  });
+                }
+                dispatch({ type: "CHANGE_TAB", tab: "mapbox" });
+              }}
               active={store.tab === "mapbox"}
               label="Mapbox"
             ></Tab>
@@ -211,9 +227,9 @@ const App = () => {
           </div>
           <Line />
           {store.tab === "googleMap" ? (
-            <GoogleMapInputs store={googleStore} dispatch={googleDispatch} />
+            <GoogleMapInputs />
           ) : store.tab === "mapbox" ? (
-            <MapboxInputs store={mapboxStore} dispatch={mapboxDispatch} />
+            <MapboxInputs />
           ) : null}
         </div>
         <div style={{ padding: "8px 16px 16px" }}>
@@ -270,4 +286,11 @@ const App = () => {
   );
 };
 
-render(<App />, document.getElementById("app"));
+render(
+  <useGoogleMapContext.Provider>
+    <useMapboxContext.Provider>
+      <App />
+    </useMapboxContext.Provider>
+  </useGoogleMapContext.Provider>,
+  document.getElementById("app")
+);

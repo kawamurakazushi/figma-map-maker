@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "add": "^2.0.6",
+    "constate": "^1.2.0",
     "figma-styled-components": "git+https://github.com/kawamurakazushi/figma-styled-components.git",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

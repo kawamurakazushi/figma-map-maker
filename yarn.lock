@@ -847,6 +847,11 @@ constants-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha1-wguW2MYXdIqvHBYCF2DNJ/y4y3U=
 
+constate@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/constate/-/constate-1.2.0.tgz#2e1e608a8ecb91381fb850810ace712f1e45a504"
+  integrity sha512-cdcCg5MFSIU1sq091lpqi7RhY0KB6zYuSFtYOF9fLQRaudZVybRo7IahFxi7vvtfsuAysrTPAMmv5FDHLJ6K8Q==
+
 copy-concurrently@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/copy-concurrently/-/copy-concurrently-1.0.5.tgz#92297398cae34937fcafd6ec8139c18051f0b5e0"

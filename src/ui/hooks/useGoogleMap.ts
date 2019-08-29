@@ -1,3 +1,4 @@
+import createUseContext from "constate";
 import { useReducer, useEffect, Reducer } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -196,4 +197,6 @@ const useGoogleMap = (): [Store, Dispatch] => {
   ];
 };
 
-export { useGoogleMap, GoogleMapOptions, Store, Dispatch };
+const useGoogleMapContext = createUseContext(useGoogleMap);
+
+export { useGoogleMapContext, GoogleMapOptions, Store, Dispatch };

@@ -1,3 +1,4 @@
+import createUseContext from "constate";
 import { useReducer, useEffect, Reducer } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -226,4 +227,6 @@ const useMapbox = (): [Store, Dispatch] => {
   ];
 };
 
-export { useMapbox, MapboxOptions, Store, Dispatch };
+const useMapboxContext = createUseContext(useMapbox);
+
+export { useMapboxContext, MapboxOptions, Store, Dispatch };

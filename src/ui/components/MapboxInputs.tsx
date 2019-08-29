@@ -2,18 +2,14 @@ import * as React from "react";
 import { useRef, useEffect } from "react";
 import { Select } from "figma-styled-components";
 
-import { Dispatch, Store } from "../hooks/useMapbox";
+import { useMapboxContext } from "../hooks/useMapbox";
 import { Line } from "./Line";
 import { Label } from "./Label";
 
-interface Props {
-  store: Store;
-  dispatch: Dispatch;
-}
+const MapboxInputs = () => {
+  const [store, dispatch] = useMapboxContext();
 
-const MapboxInputs = ({ store, dispatch }: Props) => {
   const input = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (input.current !== null) {
       input.current.focus();

@@ -2,18 +2,14 @@ import * as React from "react";
 import { useRef, useEffect } from "react";
 import { Select, Input, Checkbox } from "figma-styled-components";
 
-import { Dispatch, Store } from "../hooks/useGoogleMap";
+import { useGoogleMapContext } from "../hooks/useGoogleMap";
 import { Line } from "./Line";
 import { Label } from "./Label";
 
-interface Props {
-  store: Store;
-  dispatch: Dispatch;
-}
+const GoogleMapInputs = () => {
+  const [store, dispatch] = useGoogleMapContext();
 
-const GoogleMapInputs = ({ store, dispatch }: Props) => {
   const input = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (input.current) {
       input.current.focus();
