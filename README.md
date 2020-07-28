@@ -2,6 +2,7 @@
 
 Map Maker allows you to make a customized map blazing fast.
 
+<a href="https://www.producthunt.com/posts/figma-map-maker?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-figma-map-maker" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=163230&theme=light" alt="Figma Map Maker - Figma plugin to generate map, supporting Google Maps, Mapbox | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 ![hero](images/hero.jpg)
