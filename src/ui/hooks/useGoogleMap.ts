@@ -154,7 +154,7 @@ const useGoogleMap = (): [Store, Dispatch] => {
   );
 
   const url = generateUrl(store.options);
-  const [debounceAddress] = useDebounce(store.options.address, 500);
+  const [debounceAddress] = useDebounce(store.options.address, 700);
 
   useEffect(() => {
     const f = async () => {

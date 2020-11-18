@@ -178,7 +178,7 @@ const useMapbox = (): [Store, Dispatch] => {
     }
   );
 
-  const [debounceAddress] = useDebounce(store.options.address, 500);
+  const [debounceAddress] = useDebounce(store.options.address, 700);
 
   useEffect(() => {
     const f = async () => {
