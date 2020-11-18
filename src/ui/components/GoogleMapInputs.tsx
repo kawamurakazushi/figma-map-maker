@@ -87,7 +87,7 @@ const GoogleMapInputs = () => {
       <div style={{ padding: "0 6px" }}>
         <Checkbox
           checked={store.options.marker}
-          label="Show Maker"
+          label="Show Marker"
           onChange={(e: any) => {
             console.log(e.target.checked);
             dispatch({
