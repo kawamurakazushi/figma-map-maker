@@ -47,9 +47,9 @@ const send = async (host: Tab, url: string, options: Options) => {
         type: "image",
         image: new Uint8Array(buffer),
         options: {
-          [host]: options
-        }
-      }
+          [host]: options,
+        },
+      },
     },
     "*"
   );
@@ -58,7 +58,7 @@ const send = async (host: Tab, url: string, options: Options) => {
 const Tab = ({
   label,
   active,
-  onClick
+  onClick,
 }: {
   onClick: () => void;
   label: string;
@@ -68,7 +68,7 @@ const Tab = ({
     style={{
       marginRight: 16,
       color: active ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0.3)",
-      cursor: "default"
+      cursor: "default",
     }}
     onClick={onClick}
     className="type--11-pos-medium"
@@ -96,7 +96,7 @@ const App = () => {
     },
     {
       tab: "googleMap",
-      hidePreview: null
+      hidePreview: null,
     }
   );
 
@@ -145,7 +145,7 @@ const App = () => {
       style={{
         height: "100%",
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
       }}
     >
       <div style={{ width: 300, display: "flex", flexDirection: "column" }}>
@@ -155,7 +155,7 @@ const App = () => {
               display: "flex",
               padding: "0 16px",
               marginTop: 12,
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Tab
@@ -163,7 +163,7 @@ const App = () => {
                 if (store.tab === "mapbox") {
                   googleDispatch({
                     type: "INPUT_ADDRESS",
-                    value: mapboxStore.options.address
+                    value: mapboxStore.options.address,
                   });
                 }
                 dispatch({ type: "CHANGE_TAB", tab: "googleMap" });
@@ -176,7 +176,7 @@ const App = () => {
                 if (store.tab === "googleMap") {
                   mapboxDispatch({
                     type: "INPUT_ADDRESS",
-                    value: googleStore.options.address
+                    value: googleStore.options.address,
                   });
                 }
                 dispatch({ type: "CHANGE_TAB", tab: "mapbox" });
@@ -195,8 +195,8 @@ const App = () => {
                     parent.postMessage(
                       {
                         pluginMessage: {
-                          type: "show-preview"
-                        }
+                          type: "show-preview",
+                        },
                       },
                       "*"
                     );
@@ -207,8 +207,8 @@ const App = () => {
                     parent.postMessage(
                       {
                         pluginMessage: {
-                          type: "hide-preview"
-                        }
+                          type: "hide-preview",
+                        },
                       },
                       "*"
                     );
@@ -255,7 +255,7 @@ const App = () => {
           style={{
             flex: 1,
             display: "flex",
-            flexDirection: "column"
+            flexDirection: "column",
           }}
         >
           <div
@@ -264,10 +264,21 @@ const App = () => {
               display: "flex",
               alignItems: "center",
               borderBottom: "1px solid rgba(0,0,0,0.1)",
-              height: 43
+              height: 43,
+              justifyContent: "space-between"
             }}
           >
             Preview
+            <a
+              href="https://www.buymeacoffee.com/kawamurakazushi"
+              target="_blank"
+            >
+              <img
+                src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                alt="Buy Me A Coffee"
+                style={{ width: "100px", marginRight: 8 }}
+              />
+            </a>
           </div>
 
           <img
