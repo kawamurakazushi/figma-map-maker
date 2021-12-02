@@ -171,20 +171,6 @@ const App = () => {
               active={store.tab === "googleMap"}
               label="Google Maps"
             ></Tab>
-            <Tab
-              onClick={() => {
-                if (store.tab === "googleMap") {
-                  mapboxDispatch({
-                    type: "INPUT_ADDRESS",
-                    value: googleStore.options.address,
-                  });
-                }
-                dispatch({ type: "CHANGE_TAB", tab: "mapbox" });
-              }}
-              active={store.tab === "mapbox"}
-              label="Mapbox"
-            ></Tab>
-
             <div
               style={{ display: "flex", flex: 1, flexDirection: "row-reverse" }}
             >
@@ -265,7 +251,7 @@ const App = () => {
               alignItems: "center",
               borderBottom: "1px solid rgba(0,0,0,0.1)",
               height: 43,
-              justifyContent: "space-between"
+              justifyContent: "space-between",
             }}
           >
             Preview
